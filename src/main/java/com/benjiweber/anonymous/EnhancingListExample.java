@@ -20,8 +20,10 @@ public class EnhancingListExample {
     }
 
     interface Mappable<T> extends DelegatesTo<List<T>> {
-        default <R> List<R> map(Function<T,R> mapper) {
-            return delegate().stream().map(mapper).collect(Collectors.toList());
+        default <R, U extends ForwardingList<R> & Mappable<R>> U map(Function<T, R> mapper) {
+            return (U) (ForwardingList<R> & Mappable<R>) () -> delegate().stream()
+                .map(mapper)
+                .collect(Collectors.toList());
         }
     }
 
